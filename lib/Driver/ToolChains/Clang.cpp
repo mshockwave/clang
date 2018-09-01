@@ -4636,6 +4636,44 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
   if (!StatsFile.empty())
     CmdArgs.push_back(Args.MakeArgString(Twine("-stats-file=") + StatsFile));
 
+  // Setup extra protein stuff
+  if(const Arg *A = Args.getLastArg(options::OPT_extra_protein_EQ)) {
+    StringRef Val = A->getValue();
+    // Validation
+    bool WellFormat = false;
+    uint32_t NumAmount = 0;
+    if(Val.consumeInteger(10, NumAmount)) {
+      // overflow or empty string
+      D.Diag(diag::err_drv_invalid_value) << "Numeric amount of extra protein"
+                                          << NumAmount;
+    } else if(NumAmount == 0) {
+      D.Diag(diag::err_drv_invalid_value)
+        << "Amount of extra protein can not be zero";
+    } else {
+      WellFormat = true;
+    }
+
+    if(WellFormat) {
+      if(Val == "lb") {
+        // Turn 'pound' to 'gram'
+        NumAmount *= 454; // 1 pound == 453.59 gram
+        Val = "g";
+      } else if(!(Val == "g" || Val == "x")) {
+        WellFormat = false;
+        D.Diag(diag::err_drv_invalid_value) << "Unit of extra protein" << Val;
+      }
+    }
+
+    SmallString<8> ProteinAmount;
+    if(WellFormat) {
+      ProteinAmount.assign(std::to_string(NumAmount));
+      ProteinAmount.append(Val);
+      CmdArgs.push_back(
+        Args.MakeArgString(Twine("-extra-protein-amount=") + ProteinAmount)
+      );
+    }
+  }
+
   // Forward -Xclang arguments to -cc1, and -mllvm arguments to the LLVM option
   // parser.
   // -finclude-default-header flag is for preprocessor,

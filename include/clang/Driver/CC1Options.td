@@ -571,6 +571,9 @@ def compiler_options_dump : Flag<["-"], "compiler-options-dump">,
   HelpText<"Dump the compiler configuration options">;
 }
 
+def extra_protein_amount : Joined<["-"], "extra-protein-amount=">,
+  HelpText<"Amount of extra protein want to add for all loops">;
+
 def emit_llvm_uselists : Flag<["-"], "emit-llvm-uselists">,
   HelpText<"Preserve order of LLVM use-lists when serializing">;
 def no_emit_llvm_uselists : Flag<["-"], "no-emit-llvm-uselists">,

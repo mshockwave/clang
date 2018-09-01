@@ -286,6 +286,12 @@ def arcmt_migrate_emit_arc_errors : Flag<["-"], "arcmt-migrate-emit-errors">,
 def gen_reproducer: Flag<["-"], "gen-reproducer">, InternalDebugOpt,
   HelpText<"Auto-generates preprocessed source files and a reproduction script">;
 
+def extra_protein_EQ : Joined<["-", "--"], "add-extra-protein=">, Flags<[DriverOption]>,
+  HelpText<"Add extra protein for all loops.">;
+def extra_protein : Flag<["-", "--"], "add-extra-protein">, Flags<[DriverOption]>,
+  Alias<extra_protein_EQ>, AliasArgs<["2x"]>,
+  HelpText<"Add 2x extra protein for all loops.">;
+
 def _migrate : Flag<["--"], "migrate">, Flags<[DriverOption]>,
   HelpText<"Run the migrator">;
 def ccc_objcmt_migrate : Separate<["-"], "ccc-objcmt-migrate">,
