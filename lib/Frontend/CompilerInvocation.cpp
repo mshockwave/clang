@@ -603,6 +603,22 @@ static bool ParseCodeGenArgs(CodeGenOptions &Opts, ArgList &Args, InputKind IK,
   Opts.DebugFwdTemplateParams = Args.hasArg(OPT_debug_forward_template_params);
   Opts.EmbedSource = Args.hasArg(OPT_gembed_source);
 
+  for(const auto& Arg : Args.getAllArgValues(OPT_extra_protein_amount)) {
+    StringRef Val(Arg);
+    // We had validated in driver, no need to check again here
+    if(Val.endswith("x")) {
+      // Duplicate
+      uint32_t Num = 0;
+      (void) Val.consumeInteger(10, Num);
+      Opts.ExtraProteinAmount.Duplicate += Num;
+    } else {
+      // Amend
+      uint32_t Num = 0;
+      (void) Val.consumeInteger(10, Num);
+      Opts.ExtraProteinAmount.Amend += Num;
+    }
+  }
+
   for (const auto &Arg : Args.getAllArgValues(OPT_fdebug_prefix_map_EQ))
     Opts.DebugPrefixMap.insert(StringRef(Arg).split('='));
 

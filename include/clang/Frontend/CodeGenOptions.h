@@ -262,6 +262,17 @@ public:
   /// Set of XRay instrumentation kinds to emit.
   XRayInstrSet XRayInstrumentationBundle;
 
+  /// Extra protein for loops
+  struct ProteinAmount {
+    uint32_t Duplicate;
+    uint32_t Amend;
+    ProteinAmount() : Duplicate(0U), Amend(0U) {}
+    inline bool empty() const {
+      return !Duplicate && !Amend;
+    }
+  };
+  ProteinAmount ExtraProteinAmount;
+
 public:
   // Define accessors/mutators for code generation options of enumeration type.
 #define CODEGENOPT(Name, Bits, Default)

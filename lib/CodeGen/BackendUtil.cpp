@@ -57,6 +57,7 @@
 #include "llvm/Transforms/ObjCARC.h"
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Scalar/GVN.h"
+#include "llvm/Transforms/Scalar/ExtraProtein.h"
 #include "llvm/Transforms/Utils.h"
 #include "llvm/Transforms/Utils/NameAnonGlobals.h"
 #include "llvm/Transforms/Utils/SymbolRewriter.h"
@@ -670,6 +671,19 @@ void EmitAssemblyHelper::CreatePasses(legacy::PassManager &MPM,
 
   PMBuilder.populateFunctionPassManager(FPM);
   PMBuilder.populateModulePassManager(MPM);
+
+  // Extra protein stuff
+  if(!CodeGenOpts.ExtraProteinAmount.empty()) {
+    // We need mem2reg and sroa for better code shape
+    // these two would be added by default when OptLevel >= 1
+    // so make sure they're added even when OptLevel == 0
+    if(PMBuilder.OptLevel < 1) {
+      FPM.add(createSROAPass());
+      MPM.add(createPromoteMemoryToRegisterPass());
+    }
+    MPM.add(createExtraProteinLegacyPass(CodeGenOpts.ExtraProteinAmount.Duplicate,
+                                         CodeGenOpts.ExtraProteinAmount.Amend));
+  }
 }
 
 static void setCommandLineOpts(const CodeGenOptions &CodeGenOpts) {
